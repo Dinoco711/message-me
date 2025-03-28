@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background: white;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: white;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 500px;
+            
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #333;
+            text-shadow: 1px 1px 10px blue;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            border: none;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .status-message {
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .success {
+            color: #28a745;
+        }
+
+        .error {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <h1>Contact Us</h1>
+        <form id="contactForm">
+            <div class="form-group">
+                <textarea 
+                    id="message" 
+                    name="message"  placeholder="Enter your message..."></textarea>
+            </div>
+            <button type="submit">Send Message</button>
+            <div id="status" class="status-message"></div>
+        </form>
+    </div>
+
+
+    <!-- EmailJS SDK with specific version -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3.11.0/dist/email.min.js"></script>
+    <script>
+        (function() {
+            // Initialize EmailJS with your public key
+            emailjs.init("EATljBB4toYby1e4f");
+        })();
+
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const message = document.getElementById('message').value;
+            const status = document.getElementById('status');
+            const sendButton = this.querySelector('button');
+
+            // Show loading state
+            status.style.display = 'block';
+            status.textContent = 'Sending...';
+            status.className = 'status-message';
+            sendButton.disabled = true;  // Disable button while sending
+
+            // EmailJS parameters
+            const templateParams = {
+                message: message
+            };
+
+            emailjs.send('service_z38zq0a', 'template_6l6rn6f', templateParams)
+                .then(function(response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    status.textContent = 'Message sent successfully!';
+                    status.className = 'status-message success';
+                    document.getElementById('contactForm').reset();
+                    sendButton.disabled = false;
+                    
+                    setTimeout(() => {
+                        status.style.display = 'none';
+                    }, 3000);
+                }, function(error) {
+                    console.log('FAILED...', error);
+                    status.textContent = 'Failed to send message: ' + error.text;
+                    status.className = 'status-message error';
+                    sendButton.disabled = false;
+                    
+                    setTimeout(() => {
+                        status.style.display = 'none';
+                    }, 3000);
+                });
+        });
+    </script>
+</body>
+</html>
